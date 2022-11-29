@@ -8,6 +8,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Map;
 
 @Controller
 @RequestMapping("/api/v1/musics")
@@ -43,6 +44,12 @@ public class MusicController {
     @ResponseStatus(code = HttpStatus.OK)
     public ResponseEntity<Music> getById(@PathVariable Long id) {
         return ResponseEntity.ok(musicService.getById(id));
+    }
+
+    @GetMapping("/metricPlaylist/{id}")
+    @ResponseStatus(code = HttpStatus.OK)
+    public ResponseEntity<Map<String,String>> getMetricsPlaylist(@PathVariable Long id) {
+        return ResponseEntity.ok(Map.of("operationId",musicService.getMetricsMusic(id)));
     }
 
     @DeleteMapping("/{id}")

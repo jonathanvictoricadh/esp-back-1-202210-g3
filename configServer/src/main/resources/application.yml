@@ -8,6 +8,6 @@ spring:
     config:
       server:
         git:
-          uri: https://github.com/jonathanvictoricadh/esp-back-1-202210-g3-config
-          default-label: main
+          uri: https://github.com/victoriasuarez/esp-back-g3-config.git
+          search-paths: configData
           force-pull: true

@@ -4,6 +4,8 @@ import com.spotify.playlist.client.MusicFeign;
 import com.spotify.playlist.model.PlayListMusic;
 import com.spotify.playlist.model.Playlist;
 import com.spotify.playlist.repository.PlaylistRepository;
+import io.github.resilience4j.circuitbreaker.annotation.CircuitBreaker;
+import io.github.resilience4j.retry.annotation.Retry;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -44,17 +46,23 @@ public class PlaylistService {
         }
     }
 
+    @CircuitBreaker(name = "playListMusic", fallbackMethod = "addPlayListMusicFallBack")
+    @Retry(name = "playListMusic")
     public void addMusic(Long idPlayList, Long idMusic) throws Exception {
         var playList = playlistRepository.findById(idPlayList);
         if (playList.isPresent()) {
             var result = musicFeign.getById(idMusic);
             if (result == null) {
-              throw new Exception("Music not found");
+                throw new Exception("Music not found");
             }
             playList.get().getMusics().add(new PlayListMusic(null, playList.get(),result.getMusicId(),result.getName()));
             playlistRepository.save(playList.get());
         }else{
             throw new Exception("Playlist not found");
         }
+    }
+
+    public void addPlayListMusicFallBack(Long idPlayList, Long idMusic, Throwable t) throws Exception {
+        System.out.println("Hubo un error");
     }
 }
